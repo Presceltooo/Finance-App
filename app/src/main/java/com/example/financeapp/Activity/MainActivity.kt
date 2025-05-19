@@ -15,6 +15,8 @@ import android.view.ViewGroup
 import eightbitlab.com.blurview.RenderScriptBlur
 import android.view.ViewOutlineProvider
 import com.example.financeapp.R
+import com.example.financeapp.Adapter.TransactionAdapter
+import com.example.financeapp.Domain.TransactionDomain
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
@@ -22,6 +24,8 @@ class MainActivity : AppCompatActivity() {
     private var userName: String = "Do Duy Tung"
     private var userEmail: String = "doduytungitel@gmail.com"
     private var userBalance: Double = 3224.34
+    private val transactions = mutableListOf<TransactionDomain>()
+    private lateinit var transactionAdapter: TransactionAdapter
 
     private val profileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
@@ -39,6 +43,12 @@ class MainActivity : AppCompatActivity() {
                 val newBalance = data.getDoubleExtra("newBalance", userBalance)
                 userBalance = newBalance
                 updateBalanceDisplay()
+                // Nhận giao dịch mới
+                val newTransaction = data.getParcelableExtra<TransactionDomain>("newTransaction")
+                if (newTransaction != null) {
+                    transactions.add(0, newTransaction)
+                    transactionAdapter.notifyItemInserted(0)
+                }
             }
         }
     }
@@ -58,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         setVariable()
         updateUserInfo()
         updateBalanceDisplay()
+        initTransactionRecyclerView()
     }
 
     private fun updateUserInfo() {
@@ -116,6 +127,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun formatAmount(amount: Double): String {
         return java.text.NumberFormat.getCurrencyInstance(java.util.Locale.US).format(amount)
+    }
+
+    private fun initTransactionRecyclerView() {
+        // Giả sử bạn có 1 RecyclerView trong layout, ví dụ: binding.transactionRecyclerView
+        // Nếu chưa có, hãy thêm vào layout activity_main.xml
+        transactionAdapter = TransactionAdapter(transactions)
+        binding.view1.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.view1.adapter = transactionAdapter
+        binding.view1.isNestedScrollingEnabled = false
     }
 }
 

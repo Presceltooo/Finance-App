@@ -1,5 +1,6 @@
 package com.example.financeapp.Activity
 
+import android.content.Context
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,8 @@ import com.google.android.material.snackbar.Snackbar
 import java.text.NumberFormat
 import java.util.Locale
 import java.util.UUID
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 class DepositActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDepositBinding
@@ -31,6 +34,9 @@ class DepositActivity : AppCompatActivity() {
         // Nhận số dư từ MainActivity
         currentBalance = intent.getDoubleExtra("currentBalance", 0.0)
         updateBalanceDisplay()
+
+        // Đọc lịch sử giao dịch từ SharedPreferences
+        loadTransactions()
 
         setupUI()
         setupListeners()
@@ -92,6 +98,9 @@ class DepositActivity : AppCompatActivity() {
         transactions.add(0, transaction)
         transactionAdapter.notifyItemInserted(0)
 
+        // Lưu lại lịch sử giao dịch
+        saveTransactions()
+
         // Cập nhật số dư
         currentBalance += amount
         updateBalanceDisplay()
@@ -105,6 +114,7 @@ class DepositActivity : AppCompatActivity() {
         // Trả về số dư mới cho MainActivity và finish
         val resultIntent = android.content.Intent().apply {
             putExtra("newBalance", currentBalance)
+            putExtra("newTransaction", transaction)
         }
         setResult(RESULT_OK, resultIntent)
         finish()
@@ -149,5 +159,26 @@ class DepositActivity : AppCompatActivity() {
         )
         transactions.addAll(sampleTransactions)
         transactionAdapter.notifyDataSetChanged()
+    }
+
+    private fun saveTransactions() {
+        val sharedPref = getSharedPreferences("deposit_history", Context.MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        val gson = Gson()
+        val json = gson.toJson(transactions)
+        editor.putString("transactions", json)
+        editor.apply()
+    }
+
+    private fun loadTransactions() {
+        val sharedPref = getSharedPreferences("deposit_history", Context.MODE_PRIVATE)
+        val gson = Gson()
+        val json = sharedPref.getString("transactions", null)
+        if (json != null) {
+            val type = object : TypeToken<MutableList<TransactionDomain>>() {}.type
+            val list: MutableList<TransactionDomain> = gson.fromJson(json, type)
+            transactions.clear()
+            transactions.addAll(list)
+        }
     }
 } 

@@ -66,6 +66,11 @@ class MainActivity : AppCompatActivity() {
             }
             profileLauncher.launch(intent)
         }
+
+        // Thêm sự kiện click cho nút Deposit
+        binding.imageView5.setOnClickListener {
+            startActivity(Intent(this, DepositActivity::class.java))
+        }
     }
 
     private fun setBlueEffect() {

@@ -36,6 +36,9 @@
         <activity
             android:name=".Activity.WithdrawActivity"
             android:exported="false" />
+        <activity
+            android:name=".Activity.BookmarkActivity"
+            android:exported="false" />
 
     </application>
 

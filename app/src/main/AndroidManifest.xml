@@ -27,6 +27,9 @@
         <activity
             android:name=".Activity.ReportActivity"
             android:exported="false" />
+        <activity
+            android:name=".Activity.ProfileActivity"
+            android:exported="false" />
 
     </application>
 

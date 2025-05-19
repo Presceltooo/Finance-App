@@ -33,6 +33,9 @@
         <activity
             android:name=".Activity.DepositActivity"
             android:exported="false" />
+        <activity
+            android:name=".Activity.WithdrawActivity"
+            android:exported="false" />
 
     </application>
 

@@ -39,15 +39,13 @@ class TransactionAdapter(private val transactions: MutableList<TransactionDomain
         holder.binding.transactionDate.text = formatDate(transaction.date)
         
         // Thay đổi màu sắc dựa trên trạng thái
-        when (transaction.status) {
-            "SUCCESS" -> holder.binding.transactionAmount.setTextColor(
-                holder.itemView.context.getColor(android.R.color.holo_green_dark)
-            )
-            "PENDING" -> holder.binding.transactionAmount.setTextColor(
-                holder.itemView.context.getColor(android.R.color.holo_orange_dark)
-            )
-            "FAILED" -> holder.binding.transactionAmount.setTextColor(
+        if (transaction.type == "WITHDRAW") {
+            holder.binding.transactionAmount.setTextColor(
                 holder.itemView.context.getColor(android.R.color.holo_red_dark)
+            )
+        } else {
+            holder.binding.transactionAmount.setTextColor(
+                holder.itemView.context.getColor(android.R.color.holo_green_dark)
             )
         }
     }

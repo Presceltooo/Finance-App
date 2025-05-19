@@ -53,6 +53,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val withdrawLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            result.data?.let { data ->
+                val newBalance = data.getDoubleExtra("newBalance", userBalance)
+                userBalance = newBalance
+                updateBalanceDisplay()
+                val newTransaction = data.getParcelableExtra<TransactionDomain>("newTransaction")
+                if (newTransaction != null) {
+                    transactions.add(0, newTransaction)
+                    transactionAdapter.notifyItemInserted(0)
+                }
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -91,10 +106,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Thêm sự kiện click cho nút Deposit
-        binding.imageView5.setOnClickListener {
+        binding.depositBtn.setOnClickListener {
             val intent = Intent(this, DepositActivity::class.java)
             intent.putExtra("currentBalance", userBalance)
             depositLauncher.launch(intent)
+        }
+
+        // Thêm sự kiện click cho nút Withdraw (ví dụ withdrawBtn)
+        binding.withdrawBtn.setOnClickListener {
+            val intent = Intent(this, WithdrawActivity::class.java)
+            intent.putExtra("currentBalance", userBalance)
+            withdrawLauncher.launch(intent)
         }
     }
 

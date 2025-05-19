@@ -42,6 +42,17 @@ class DepositActivity : AppCompatActivity() {
         setupListeners()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Luôn lấy số dư mới nhất từ SharedPreferences
+        val sharedPref = getSharedPreferences("user_balance", Context.MODE_PRIVATE)
+        currentBalance = sharedPref.getFloat("balance", 0f).toDouble()
+        updateBalanceDisplay()
+        // Luôn load lại lịch sử giao dịch
+        loadTransactions()
+        transactionAdapter.notifyDataSetChanged()
+    }
+
     private fun setupUI() {
         // Hiển thị số dư hiện tại
         updateBalanceDisplay()
@@ -50,9 +61,6 @@ class DepositActivity : AppCompatActivity() {
         transactionAdapter = TransactionAdapter(transactions)
         binding.transactionsRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.transactionsRecyclerView.adapter = transactionAdapter
-
-        // Thêm một số giao dịch mẫu
-        addSampleTransactions()
     }
 
     private fun setupListeners() {
@@ -98,8 +106,8 @@ class DepositActivity : AppCompatActivity() {
         transactions.add(0, transaction)
         transactionAdapter.notifyItemInserted(0)
 
-        // Lưu lại lịch sử giao dịch
-        saveTransactions()
+        // Lưu lại lịch sử giao dịch toàn cục
+        saveToGlobalTransactionHistory(transaction)
 
         // Cập nhật số dư
         currentBalance += amount
@@ -136,49 +144,26 @@ class DepositActivity : AppCompatActivity() {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
     }
 
-    private fun addSampleTransactions() {
-        val sampleTransactions = listOf(
-            TransactionDomain(
-                id = UUID.randomUUID().toString(),
-                amount = 500.0,
-                type = "DEPOSIT",
-                method = "BANK_CARD",
-                status = "SUCCESS",
-                date = java.util.Date(System.currentTimeMillis() - 86400000), // Yesterday
-                description = "Deposit via Bank Card"
-            ),
-            TransactionDomain(
-                id = UUID.randomUUID().toString(),
-                amount = 1000.0,
-                type = "DEPOSIT",
-                method = "E_WALLET",
-                status = "SUCCESS",
-                date = java.util.Date(System.currentTimeMillis() - 172800000), // 2 days ago
-                description = "Deposit via E-Wallet"
-            )
-        )
-        transactions.addAll(sampleTransactions)
-        transactionAdapter.notifyDataSetChanged()
-    }
-
-    private fun saveTransactions() {
-        val sharedPref = getSharedPreferences("deposit_history", Context.MODE_PRIVATE)
-        val editor = sharedPref.edit()
+    private fun saveToGlobalTransactionHistory(transaction: TransactionDomain) {
+        val sharedPref = getSharedPreferences("transaction_history", Context.MODE_PRIVATE)
         val gson = Gson()
-        val json = gson.toJson(transactions)
-        editor.putString("transactions", json)
-        editor.apply()
+        val json = sharedPref.getString("transactions", null)
+        val type = object : TypeToken<MutableList<TransactionDomain>>() {}.type
+        val list: MutableList<TransactionDomain> = if (json != null) gson.fromJson(json, type) else mutableListOf()
+        list.add(0, transaction)
+        sharedPref.edit().putString("transactions", gson.toJson(list)).apply()
     }
 
     private fun loadTransactions() {
-        val sharedPref = getSharedPreferences("deposit_history", Context.MODE_PRIVATE)
+        val sharedPref = getSharedPreferences("transaction_history", Context.MODE_PRIVATE)
         val gson = Gson()
         val json = sharedPref.getString("transactions", null)
+        transactions.clear()
         if (json != null) {
             val type = object : TypeToken<MutableList<TransactionDomain>>() {}.type
             val list: MutableList<TransactionDomain> = gson.fromJson(json, type)
-            transactions.clear()
-            transactions.addAll(list)
+            // Chỉ lấy các giao dịch DEPOSIT
+            transactions.addAll(list.filter { it.type == "DEPOSIT" })
         }
     }
 } 

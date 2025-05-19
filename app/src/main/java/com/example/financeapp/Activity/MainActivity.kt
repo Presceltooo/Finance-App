@@ -17,6 +17,7 @@ import android.view.ViewOutlineProvider
 import com.example.financeapp.R
 import com.example.financeapp.Adapter.TransactionAdapter
 import com.example.financeapp.Domain.TransactionDomain
+import android.content.Context
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
@@ -118,6 +119,13 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("currentBalance", userBalance)
             withdrawLauncher.launch(intent)
         }
+
+        // Thêm sự kiện click cho nút Bookmark (ví dụ bookmarkBtn)
+        binding.bookmarkBtn.setOnClickListener {
+            val intent = Intent(this, BookmarkActivity::class.java)
+            intent.putExtra("currentBalance", userBalance)
+            startActivity(intent)
+        }
     }
 
     private fun setBlueEffect() {
@@ -158,6 +166,31 @@ class MainActivity : AppCompatActivity() {
         binding.view1.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.view1.adapter = transactionAdapter
         binding.view1.isNestedScrollingEnabled = false
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadBalanceAndTransactions()
+    }
+
+    private fun loadBalanceAndTransactions() {
+        // Đọc lại số dư từ SharedPreferences
+        val sharedPref = getSharedPreferences("user_balance", Context.MODE_PRIVATE)
+        val balance = sharedPref.getFloat("balance", 0f)
+        userBalance = balance.toDouble()
+        updateBalanceDisplay()
+
+        // Đọc lại lịch sử giao dịch từ SharedPreferences "transaction_history"
+        val transPref = getSharedPreferences("transaction_history", Context.MODE_PRIVATE)
+        val gson = com.google.gson.Gson()
+        val json = transPref.getString("transactions", null)
+        val type = object : com.google.gson.reflect.TypeToken<MutableList<com.example.financeapp.Domain.TransactionDomain>>() {}.type
+        transactions.clear()
+        if (json != null) {
+            val list: MutableList<com.example.financeapp.Domain.TransactionDomain> = gson.fromJson(json, type)
+            transactions.addAll(list)
+        }
+        transactionAdapter.notifyDataSetChanged()
     }
 }
 

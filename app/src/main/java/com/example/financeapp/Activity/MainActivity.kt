@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private var userName: String = "Do Duy Tung"
     private var userEmail: String = "doduytungitel@gmail.com"
+    private var userBalance: Double = 3224.34
 
     private val profileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
@@ -28,6 +29,16 @@ class MainActivity : AppCompatActivity() {
                 userName = data.getStringExtra("newName") ?: userName
                 userEmail = data.getStringExtra("newEmail") ?: userEmail
                 updateUserInfo()
+            }
+        }
+    }
+
+    private val depositLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            result.data?.let { data ->
+                val newBalance = data.getDoubleExtra("newBalance", userBalance)
+                userBalance = newBalance
+                updateBalanceDisplay()
             }
         }
     }
@@ -46,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         setBlueEffect()
         setVariable()
         updateUserInfo()
+        updateBalanceDisplay()
     }
 
     private fun updateUserInfo() {
@@ -69,7 +81,9 @@ class MainActivity : AppCompatActivity() {
 
         // Thêm sự kiện click cho nút Deposit
         binding.imageView5.setOnClickListener {
-            startActivity(Intent(this, DepositActivity::class.java))
+            val intent = Intent(this, DepositActivity::class.java)
+            intent.putExtra("currentBalance", userBalance)
+            depositLauncher.launch(intent)
         }
     }
 
@@ -93,6 +107,15 @@ class MainActivity : AppCompatActivity() {
         binding.view1.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.view1.adapter = ExpenseListAdapter(mainViewModel.loadData())
         binding.view1.isNestedScrollingEnabled = false
+    }
+
+    private fun updateBalanceDisplay() {
+        binding.textView6.text = "Your Balance"
+        binding.textView7.text = formatAmount(userBalance)
+    }
+
+    private fun formatAmount(amount: Double): String {
+        return java.text.NumberFormat.getCurrencyInstance(java.util.Locale.US).format(amount)
     }
 }
 

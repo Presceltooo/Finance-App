@@ -1,8 +1,10 @@
 package com.example.financeapp.Activity
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.financeapp.Adapter.TransactionAdapter
@@ -31,7 +33,7 @@ class DepositActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
 
-        // Nhận số dư từ MainActivity
+        // Nhận số dư từ com.example.financeapp.Activity.MainActivity
         currentBalance = intent.getDoubleExtra("currentBalance", 0.0)
         updateBalanceDisplay()
 
@@ -112,17 +114,17 @@ class DepositActivity : AppCompatActivity() {
         // Cập nhật số dư
         currentBalance += amount
         updateBalanceDisplay()
-        
+
         // Lưu số dư mới vào SharedPreferences
         saveBalance(currentBalance)
-        
+
         // Xóa input
         binding.amountEditText.text?.clear()
         binding.paymentMethodGroup.clearCheck()
 
         showSuccess("Successfully deposited ${formatAmount(amount)} via $method")
 
-        // Trả về số dư mới cho MainActivity và finish
+        // Trả về số dư mới cho com.example.financeapp.Activity.MainActivity và finish
         val resultIntent = android.content.Intent().apply {
             putExtra("newBalance", currentBalance)
             putExtra("newTransaction", transaction)
@@ -174,4 +176,4 @@ class DepositActivity : AppCompatActivity() {
             transactions.addAll(list.filter { it.type == "DEPOSIT" })
         }
     }
-} 
+}

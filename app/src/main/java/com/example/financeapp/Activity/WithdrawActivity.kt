@@ -1,8 +1,10 @@
 package com.example.financeapp.Activity
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.financeapp.Adapter.TransactionAdapter
@@ -31,7 +33,7 @@ class WithdrawActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
 
-        // Nhận số dư từ MainActivity nếu có
+        // Nhận số dư từ com.example.financeapp.Activity.MainActivity nếu có
         currentBalance = intent.getDoubleExtra("currentBalance", 3000.0)
         updateBalanceDisplay()
 
@@ -113,7 +115,7 @@ class WithdrawActivity : AppCompatActivity() {
 
         showSuccess("Successfully withdrew ${formatAmount(amount)} to $method")
 
-        // Trả về số dư mới và transaction cho MainActivity
+        // Trả về số dư mới và transaction cho com.example.financeapp.Activity.MainActivity
         val resultIntent = android.content.Intent().apply {
             putExtra("newBalance", currentBalance)
             putExtra("newTransaction", transaction)
@@ -165,4 +167,4 @@ class WithdrawActivity : AppCompatActivity() {
             transactions.addAll(list.filter { it.type == "WITHDRAW" })
         }
     }
-} 
+}

@@ -21,7 +21,7 @@ class ProfileActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
 
-        // Lấy thông tin hiện tại từ MainActivity
+        // Lấy thông tin hiện tại từ com.example.financeapp.Activity.MainActivity
         val currentName = intent.getStringExtra("currentName") ?: ""
         val currentEmail = intent.getStringExtra("currentEmail") ?: ""
 
@@ -57,7 +57,7 @@ class ProfileActivity : AppCompatActivity() {
             binding.nameInputLayout.error = null
             binding.emailInputLayout.error = null
 
-            // Trả về kết quả cho MainActivity
+            // Trả về kết quả cho com.example.financeapp.Activity.MainActivity
             val resultIntent = Intent().apply {
                 putExtra("newName", newName)
                 putExtra("newEmail", newEmail)

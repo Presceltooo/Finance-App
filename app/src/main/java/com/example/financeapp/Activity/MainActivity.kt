@@ -129,10 +129,7 @@ class MainActivity : AppCompatActivity() {
         val decorView = this.window.decorView
         val rootView = decorView.findViewById<View>(android.R.id.content) as ViewGroup
         val windowBackground = decorView.background
-        binding.blueView.setupWith(
-            rootView,
-            RenderScriptBlur(this)
-        )
+        binding.blueView.setupWith(rootView)
             .setFrameClearDrawable(windowBackground)
             .setBlurRadius(radius)
 
@@ -189,4 +186,3 @@ class MainActivity : AppCompatActivity() {
         transactionAdapter.notifyDataSetChanged()
     }
 }
-

@@ -2,6 +2,10 @@
 
 A simple personal finance management application developed in Kotlin for Android.
 
+## Team
+
+Đỗ Duy Tùng - 22110197    Hoàng Đức Việt - 22110178
+
 ## Main Features
 
 ### 1. Balance Management

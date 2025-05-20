@@ -93,10 +93,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setVariable() {
-        binding.cardBtn.setOnClickListener { 
-            startActivity(Intent(this, ReportActivity::class.java))
-        }
-
         // Thêm sự kiện click cho nút Profile
         binding.root.findViewById<View>(R.id.profile_layout)?.setOnClickListener {
             val intent = Intent(this, ProfileActivity::class.java).apply {

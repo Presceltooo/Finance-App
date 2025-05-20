@@ -113,6 +113,9 @@ class DepositActivity : AppCompatActivity() {
         currentBalance += amount
         updateBalanceDisplay()
         
+        // Lưu số dư mới vào SharedPreferences
+        saveBalance(currentBalance)
+        
         // Xóa input
         binding.amountEditText.text?.clear()
         binding.paymentMethodGroup.clearCheck()
@@ -126,6 +129,11 @@ class DepositActivity : AppCompatActivity() {
         }
         setResult(RESULT_OK, resultIntent)
         finish()
+    }
+
+    private fun saveBalance(balance: Double) {
+        val sharedPref = getSharedPreferences("user_balance", Context.MODE_PRIVATE)
+        sharedPref.edit().putFloat("balance", balance.toFloat()).apply()
     }
 
     private fun updateBalanceDisplay() {
